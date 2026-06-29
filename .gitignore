@@ -1,0 +1,15 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor folders
+.vscode/
+.idea/
+
+# Node (if you ever add any tooling)
+node_modules/
+
+# Local env files — never commit secrets
+.env
+.env.local

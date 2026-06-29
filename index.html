@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bashir Manzil Hisaab</title>
+    <meta name="description" content="Bashir Manzil ka rozana ka hisaab">
+    <meta name="theme-color" content="#1e293b">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ── HEADER ─────────────────────────────────────── -->
+    <header class="header" id="app-header">
+        <button id="back-btn" class="back-btn hidden" aria-label="Go back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <div class="header-center">
+            <span class="header-logo">🏠</span>
+            <h1 id="page-title">Bashir Manzil</h1>
+        </div>
+    </header>
+
+    <!-- ── TOAST ──────────────────────────────────────── -->
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+    <!-- ── MAIN CONTENT ───────────────────────────────── -->
+    <main id="app-main">
+
+        <!-- HOME VIEW -->
+        <section id="view-home" class="view active">
+            <div class="home-hero">
+                <p class="home-subtitle">آپ کا روزانہ کا حساب</p>
+            </div>
+
+            <div class="section-label">Hisaab ki Kitaabain</div>
+            <div class="card-grid">
+
+                <button class="nav-card" data-type="doodh" onclick="app.navigate('doodh')">
+                    <div class="nav-card__icon" style="background:var(--c-doodh-soft);color:var(--c-doodh)">🥛</div>
+                    <div class="nav-card__body">
+                        <h2>Doodh</h2>
+                        <p>ka Hisaab</p>
+                    </div>
+                    <div class="nav-card__meta" id="meta-doodh"></div>
+                    <svg class="nav-card__arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+
+                <button class="nav-card" data-type="pani" onclick="app.navigate('pani')">
+                    <div class="nav-card__icon" style="background:var(--c-pani-soft);color:var(--c-pani)">💧</div>
+                    <div class="nav-card__body">
+                        <h2>Pani</h2>
+                        <p>ka Hisaab</p>
+                    </div>
+                    <div class="nav-card__meta" id="meta-pani"></div>
+                    <svg class="nav-card__arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+
+                <button class="nav-card" data-type="faheem" onclick="app.navigate('faheem')">
+                    <div class="nav-card__icon" style="background:var(--c-faheem-soft);color:var(--c-faheem)">🤝</div>
+                    <div class="nav-card__body">
+                        <h2>Faheem Bhai</h2>
+                        <p>ka Hisaab</p>
+                    </div>
+                    <div class="nav-card__meta" id="meta-faheem"></div>
+                    <svg class="nav-card__arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+
+                <button class="nav-card" data-type="darzan" onclick="app.navigate('darzan')">
+                    <div class="nav-card__icon" style="background:var(--c-darzan-soft);color:var(--c-darzan)">✂️</div>
+                    <div class="nav-card__body">
+                        <h2>Darzan</h2>
+                        <p>ka Hisaab</p>
+                    </div>
+                    <div class="nav-card__meta" id="meta-darzan"></div>
+                    <svg class="nav-card__arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+
+                <button class="nav-card" data-type="other" onclick="app.navigate('other')">
+                    <div class="nav-card__icon" style="background:var(--c-other-soft);color:var(--c-other)">📝</div>
+                    <div class="nav-card__body">
+                        <h2>Doosra</h2>
+                        <p>ka Hisaab</p>
+                    </div>
+                    <div class="nav-card__meta" id="meta-other"></div>
+                    <svg class="nav-card__arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+
+            </div>
+
+            <div class="section-label" style="margin-top:12px">Kul Hisaab</div>
+            <button class="total-card" onclick="app.navigate('total')">
+                <div class="total-card__left">
+                    <div class="total-card__icon">📊</div>
+                    <div>
+                        <h2>Total Hisaab</h2>
+                        <p>Poore mahine ka hisaab</p>
+                    </div>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+        </section>
+
+        <!-- DOODH VIEW -->
+        <section id="view-doodh" class="view hidden">
+            <form id="form-doodh" class="entry-form" data-type="doodh" novalidate>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="doodh-date">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Date
+                        </label>
+                        <input type="date" id="doodh-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="doodh-litres">Litres</label>
+                        <input type="number" step="0.5" min="0.5" id="doodh-litres" placeholder="1.5" required inputmode="decimal">
+                    </div>
+                </div>
+                <button type="submit" class="save-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Save Entry
+                </button>
+            </form>
+            <div class="entries-container" id="entries-doodh"></div>
+        </section>
+
+        <!-- PANI VIEW -->
+        <section id="view-pani" class="view hidden">
+            <form id="form-pani" class="entry-form" data-type="pani" novalidate>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pani-date">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Date
+                        </label>
+                        <input type="date" id="pani-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pani-cans">Cans</label>
+                        <input type="number" step="1" min="1" id="pani-cans" placeholder="2" required inputmode="numeric">
+                    </div>
+                </div>
+                <button type="submit" class="save-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Save Entry
+                </button>
+            </form>
+            <div class="entries-container" id="entries-pani"></div>
+        </section>
+
+        <!-- FAHEEM BHAI VIEW -->
+        <section id="view-faheem" class="view hidden">
+            <form id="form-faheem" class="entry-form" data-type="faheem" novalidate>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="faheem-date">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Date
+                        </label>
+                        <input type="date" id="faheem-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="faheem-amount">Amount (Rs)</label>
+                        <input type="number" step="1" min="1" id="faheem-amount" placeholder="500" required inputmode="numeric">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="faheem-desc">Description</label>
+                    <input type="text" id="faheem-desc" placeholder="e.g. Kapra liya, Paise diye" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="faheem-type">Type</label>
+                    <div class="toggle-group">
+                        <input type="radio" id="faheem-type-diya" name="faheem-type" value="diya" checked>
+                        <label for="faheem-type-diya" class="toggle-option toggle-diya">💸 Diya (Given)</label>
+                        <input type="radio" id="faheem-type-liya" name="faheem-type" value="liya">
+                        <label for="faheem-type-liya" class="toggle-option toggle-liya">💰 Liya (Received)</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="faheem-note">Note <span class="optional">(Optional)</span></label>
+                    <input type="text" id="faheem-note" placeholder="Extra details" autocomplete="off">
+                </div>
+                <button type="submit" class="save-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Save Entry
+                </button>
+            </form>
+            <div class="entries-container" id="entries-faheem"></div>
+        </section>
+
+        <!-- DARZAN VIEW -->
+        <section id="view-darzan" class="view hidden">
+            <form id="form-darzan" class="entry-form" data-type="darzan" novalidate>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="darzan-date">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Date
+                        </label>
+                        <input type="date" id="darzan-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="darzan-qty">Darzans</label>
+                        <input type="number" step="0.5" min="0.5" id="darzan-qty" placeholder="2" required inputmode="decimal">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="darzan-item">Item Name</label>
+                    <input type="text" id="darzan-item" placeholder="e.g. Anday, Kela" required autocomplete="off">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="darzan-rate">Rate/Darzan (Rs)</label>
+                        <input type="number" step="1" min="1" id="darzan-rate" placeholder="120" required inputmode="numeric">
+                    </div>
+                    <div class="form-group">
+                        <label>Total</label>
+                        <div class="calc-display" id="darzan-total-display">Rs —</div>
+                    </div>
+                </div>
+                <button type="submit" class="save-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Save Entry
+                </button>
+            </form>
+            <div class="entries-container" id="entries-darzan"></div>
+        </section>
+
+        <!-- OTHER VIEW -->
+        <section id="view-other" class="view hidden">
+            <form id="form-other" class="entry-form" data-type="other" novalidate>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="other-date">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Date
+                        </label>
+                        <input type="date" id="other-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="other-amount">Amount (Rs)</label>
+                        <input type="number" step="1" min="1" id="other-amount" placeholder="500" required inputmode="numeric">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="other-name">Expense Name</label>
+                    <input type="text" id="other-name" placeholder="e.g. Sabzi, Bijli bill" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="other-note">Note <span class="optional">(Optional)</span></label>
+                    <input type="text" id="other-note" placeholder="Any extra details" autocomplete="off">
+                </div>
+                <button type="submit" class="save-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Save Entry
+                </button>
+            </form>
+            <div class="entries-container" id="entries-other"></div>
+        </section>
+
+        <!-- TOTAL HISAAB VIEW -->
+        <section id="view-total" class="view hidden">
+            <div class="total-month-picker">
+                <button class="month-nav-btn" id="month-prev" onclick="app.changeMonth(-1)" aria-label="Previous month">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div class="month-display" id="total-month-display">June 2026</div>
+                <button class="month-nav-btn" id="month-next" onclick="app.changeMonth(1)" aria-label="Next month">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+            </div>
+
+            <div id="total-grand-card" class="grand-total-card"></div>
+            <div id="total-breakdown" class="total-breakdown"></div>
+        </section>
+
+    </main>
+
+    <!-- ── EDIT MODAL ──────────────────────────────────── -->
+    <div id="edit-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+        <div class="modal-backdrop" onclick="app.closeEditModal()"></div>
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <h2 id="edit-modal-title" class="modal-title">Edit Entry</h2>
+            <form id="form-edit" novalidate>
+                <div id="edit-fields"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-ghost" onclick="app.closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Update Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ── DELETE MODAL ────────────────────────────────── -->
+    <div id="delete-modal" class="modal hidden" role="alertdialog" aria-modal="true">
+        <div class="modal-backdrop" onclick="app.closeDeleteModal()"></div>
+        <div class="modal-sheet modal-sheet--sm">
+            <div class="modal-handle"></div>
+            <div class="delete-modal-icon">🗑️</div>
+            <h2 class="modal-title" style="text-align:center">Delete Entry?</h2>
+            <p class="modal-subtitle">This cannot be undone.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-ghost" onclick="app.closeDeleteModal()">Cancel</button>
+                <button type="button" class="btn-danger" id="confirm-delete-btn">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase client wrapper (configure your keys inside) -->
+    <script src="supabase-client.js"></script>
+    <!-- Main app -->
+    <script src="app.js"></script>
+</body>
+</html>
