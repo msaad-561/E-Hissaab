@@ -8,8 +8,8 @@
      4. Save this file — the app will automatically sync to cloud.
 ═══════════════════════════════════════════════════════════════ */
 
-const SUPABASE_URL      = 'YOUR_SUPABASE_URL';       // ← paste here
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';  // ← paste here
+const SUPABASE_URL      = 'https://zkwqylxhrkdzbpnthucx.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inprd3F5bHhocmtkemJwbnRodWN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3NTY1MzUsImV4cCI6MjA5ODMzMjUzNX0.smHxdVpCfQ06O2OhhBrdy7lcJBOyYvoigmepw7Qbcig';
 
 // ── Internal setup ────────────────────────────────────────────
 const _configured = (
