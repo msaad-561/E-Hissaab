@@ -1,39 +1,128 @@
 /* ═══════════════════════════════════════════════════
    CONFIG — TYPE DEFINITIONS
-   Each type declares everything the generic engine needs.
 ═══════════════════════════════════════════════════ */
-const ALL_TYPES = ['doodh', 'pani', 'faheem', 'darzan', 'other'];
+const ALL_TYPES = ['doodh', 'pani', 'faheem', 'nasra', 'sumaira', 'other'];
 
 const VIEWS = {
-    home:   { title: 'Bashir Manzil' },
-    doodh:  { title: '🥛 Doodh ka Hisaab' },
-    pani:   { title: '💧 Pani ka Hisaab' },
-    faheem: { title: '🤝 Faheem Bhai Hisaab' },
-    darzan: { title: '✂️ Darzan Hisaab' },
-    other:  { title: '📝 Doosra Hisaab' },
-    total:  { title: '📊 Total Hisaab' }
+    home:    { title: 'Bashir Manzil' },
+    doodh:   { title: '🥛 Doodh ka Hisaab' },
+    pani:    { title: '💧 Pani ka Hisaab' },
+    faheem:  { title: '🤝 Faheem Bhai Hisaab' },
+    nasra:   { title: '🧵 Baji Nasra Hisaab' },
+    sumaira: { title: '✂️ Sumaira Darzan Hisaab' },
+    other:   { title: '📝 Doosra Hisaab' },
+    total:   { title: '📊 Total Hisaab' }
 };
+
+/* ── Helper: make a Darzan-type config for nasra or sumaira ── */
+function makeDarzanConfig(type) {
+    const META = {
+        nasra:   { emoji: '🧵', label: 'Baji Nasra',      accent: 'accent-nasra',   color: 'var(--c-nasra)',   soft: 'var(--c-nasra-soft)' },
+        sumaira: { emoji: '✂️', label: 'Sumaira Darzan',  accent: 'accent-sumaira', color: 'var(--c-sumaira)', soft: 'var(--c-sumaira-soft)' }
+    };
+    const m = META[type];
+    return {
+        emoji: m.emoji, label: m.label,
+        accent: m.accent, color: m.color, soft: m.soft,
+        valueFields: [`${type}-qty`, `${type}-item`, `${type}-rate`, `${type}-stitch`, `${type}-suits`],
+        resetFields: [`${type}-qty`, `${type}-item`, `${type}-rate`, `${type}-stitch`, `${type}-suits`],
+        hasAmount: true,
+        getDetail: e => {
+            const darzanTotal = round2(e.qty * e.rate);
+            const stitchTotal = (e.stitchCost || 0) * (e.numSuits || 0);
+            return `${esc(e.item)} — ${e.qty} Drz × Rs ${fmtNum(e.rate)} = Rs ${fmtNum(darzanTotal)}` +
+                   (stitchTotal ? ` + Stitching Rs ${fmtNum(stitchTotal)} = <strong>Rs ${fmtNum(darzanTotal + stitchTotal)}</strong>` : '');
+        },
+        getMonthSummary: entries => `Rs ${fmtNum(entries.reduce((s, e) => s + (e.total || 0), 0))}`,
+        getHomeMetaLine: entries => {
+            const thisMonth = getThisMonthKey();
+            const m = entries.filter(e => e.date.slice(0, 7) === thisMonth);
+            return m.length ? `Rs ${fmtNum(m.reduce((s, e) => s + (e.total || 0), 0))} this month` : `${entries.length} entries`;
+        },
+        buildEntry: vals => {
+            const qty        = parseFloat(vals[`${type}-qty`]);
+            const rate       = parseFloat(vals[`${type}-rate`]);
+            const stitchCost = parseFloat(vals[`${type}-stitch`]) || 0;
+            const numSuits   = parseInt(vals[`${type}-suits`], 10) || 0;
+            const darzanTotal = round2(qty * rate);
+            const stitchTotal = stitchCost * numSuits;
+            return {
+                date: vals[`${type}-date`],
+                item: vals[`${type}-item`].trim(),
+                qty, rate, stitchCost, numSuits,
+                total: darzanTotal + stitchTotal
+            };
+        },
+        editFields: entry => `
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="edit-date" value="${entry.date}" required>
+                </div>
+                <div class="form-group">
+                    <label>Darzans</label>
+                    <input type="number" step="0.5" min="0.5" id="edit-qty" value="${entry.qty}" required inputmode="decimal">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Item Name</label>
+                <input type="text" id="edit-item" value="${esc(entry.item)}" required autocomplete="off">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Rate/Darzan (Rs)</label>
+                    <input type="number" step="1" min="1" id="edit-rate" value="${entry.rate}" required inputmode="numeric">
+                </div>
+                <div class="form-group">
+                    <label>Stitching/Suit (Rs)</label>
+                    <input type="number" step="1" min="0" id="edit-stitch" value="${entry.stitchCost || 0}" required inputmode="numeric">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>No. of Suits</label>
+                <input type="number" step="1" min="0" id="edit-suits" value="${entry.numSuits || 0}" required inputmode="numeric">
+            </div>`,
+        readEdit: () => {
+            const qty        = parseFloat(val('edit-qty'));
+            const rate       = parseFloat(val('edit-rate'));
+            const stitchCost = parseFloat(val('edit-stitch')) || 0;
+            const numSuits   = parseInt(val('edit-suits'), 10) || 0;
+            return { date: val('edit-date'), item: val('edit-item').trim(), qty, rate, stitchCost, numSuits,
+                     total: round2(qty * rate) + stitchCost * numSuits };
+        },
+        totalAmount: entries => entries.reduce((s, e) => s + (e.total || 0), 0),
+        totalLabel:  entries => `Rs ${fmtNum(entries.reduce((s, e) => s + (e.total || 0), 0))} — ${entries.length} entries`,
+    };
+}
 
 const TYPE_CONFIG = {
     doodh: {
         emoji: '🥛', label: 'Doodh',
         accent: 'accent-doodh',
         color: 'var(--c-doodh)', soft: 'var(--c-doodh-soft)',
-        // Form field IDs to validate (excluding date which is handled separately)
-        valueFields: ['doodh-litres'],
-        resetFields: ['doodh-litres'],
-        hasAmount: false,
-        getDetail: e => `${e.litres} Litre${e.litres !== 1 ? 's' : ''}`,
-        getMonthSummary: entries => `${round2(entries.reduce((s, e) => s + e.litres, 0))} L`,
+        valueFields: ['doodh-litres', 'doodh-price'],
+        resetFields: ['doodh-litres', 'doodh-price'],
+        hasAmount: true,
+        getDetail: e => {
+            if (e.pricePerLitre) return `${e.litres} L × Rs ${fmtNum(e.pricePerLitre)} = <strong>Rs ${fmtNum(e.totalCost)}</strong>`;
+            return `${e.litres} Litre${e.litres !== 1 ? 's' : ''}`;
+        },
+        getMonthSummary: entries => {
+            const totalCost = round2(entries.reduce((s, e) => s + (e.totalCost || 0), 0));
+            return totalCost ? `Rs ${fmtNum(totalCost)}` : `${round2(entries.reduce((s, e) => s + e.litres, 0))} L`;
+        },
         getHomeMetaLine: entries => {
             const thisMonth = getThisMonthKey();
             const m = entries.filter(e => e.date.slice(0, 7) === thisMonth);
-            return m.length ? `${round2(m.reduce((s, e) => s + e.litres, 0))} L this month` : `${entries.length} entries`;
+            if (!m.length) return `${entries.length} entries`;
+            const cost = round2(m.reduce((s, e) => s + (e.totalCost || 0), 0));
+            return cost ? `Rs ${fmtNum(cost)} this month` : `${round2(m.reduce((s, e) => s + e.litres, 0))} L this month`;
         },
-        buildEntry: vals => ({
-            date: vals['doodh-date'],
-            litres: parseFloat(vals['doodh-litres'])
-        }),
+        buildEntry: vals => {
+            const litres       = parseFloat(vals['doodh-litres']);
+            const pricePerLitre = parseFloat(vals['doodh-price']);
+            return { date: vals['doodh-date'], litres, pricePerLitre, totalCost: round2(litres * pricePerLitre) };
+        },
         editFields: entry => `
             <div class="form-row">
                 <div class="form-group">
@@ -44,14 +133,22 @@ const TYPE_CONFIG = {
                     <label>Litres</label>
                     <input type="number" step="0.5" min="0.5" id="edit-litres" value="${entry.litres}" required inputmode="decimal">
                 </div>
+            </div>
+            <div class="form-group">
+                <label>Price per Litre (Rs)</label>
+                <input type="number" step="1" min="1" id="edit-price" value="${entry.pricePerLitre || ''}" required inputmode="numeric">
             </div>`,
-        readEdit: () => ({
-            date: val('edit-date'),
-            litres: parseFloat(val('edit-litres'))
-        }),
-        // For Total Hisaab page
-        totalAmount: entries => null, // no rupee amount
-        totalLabel: entries => `${round2(entries.reduce((s, e) => s + e.litres, 0))} L — ${entries.length} entries`,
+        readEdit: () => {
+            const litres        = parseFloat(val('edit-litres'));
+            const pricePerLitre = parseFloat(val('edit-price'));
+            return { date: val('edit-date'), litres, pricePerLitre, totalCost: round2(litres * pricePerLitre) };
+        },
+        totalAmount: entries => round2(entries.reduce((s, e) => s + (e.totalCost || 0), 0)),
+        totalLabel:  entries => {
+            const litres = round2(entries.reduce((s, e) => s + e.litres, 0));
+            const cost   = round2(entries.reduce((s, e) => s + (e.totalCost || 0), 0));
+            return `${litres} L — Rs ${fmtNum(cost)} total`;
+        },
     },
 
     pani: {
@@ -60,18 +157,27 @@ const TYPE_CONFIG = {
         color: 'var(--c-pani)', soft: 'var(--c-pani-soft)',
         valueFields: ['pani-cans'],
         resetFields: ['pani-cans'],
-        hasAmount: false,
-        getDetail: e => `${e.cans} ${e.cans === 1 ? 'Can' : 'Cans'}`,
-        getMonthSummary: entries => `${entries.reduce((s, e) => s + e.cans, 0)} cans`,
+        hasAmount: true,
+        getDetail: e => {
+            if (e.pricePerCan) return `${e.cans} Can${e.cans !== 1 ? 's' : ''} × Rs ${e.pricePerCan} = <strong>Rs ${fmtNum(e.totalCost)}</strong>`;
+            return `${e.cans} ${e.cans === 1 ? 'Can' : 'Cans'}`;
+        },
+        getMonthSummary: entries => {
+            const cost = entries.reduce((s, e) => s + (e.totalCost || 0), 0);
+            return cost ? `Rs ${fmtNum(cost)}` : `${entries.reduce((s, e) => s + e.cans, 0)} cans`;
+        },
         getHomeMetaLine: entries => {
             const thisMonth = getThisMonthKey();
             const m = entries.filter(e => e.date.slice(0, 7) === thisMonth);
-            return m.length ? `${m.reduce((s, e) => s + e.cans, 0)} cans this month` : `${entries.length} entries`;
+            if (!m.length) return `${entries.length} entries`;
+            const cost = m.reduce((s, e) => s + (e.totalCost || 0), 0);
+            return cost ? `Rs ${fmtNum(cost)} this month` : `${m.reduce((s, e) => s + e.cans, 0)} cans this month`;
         },
-        buildEntry: vals => ({
-            date: vals['pani-date'],
-            cans: parseInt(vals['pani-cans'], 10)
-        }),
+        buildEntry: vals => {
+            const cans       = parseInt(vals['pani-cans'], 10);
+            const pricePerCan = parseInt(document.getElementById('pani-price')?.value || '40', 10);
+            return { date: vals['pani-date'], cans, pricePerCan, totalCost: cans * pricePerCan };
+        },
         editFields: entry => `
             <div class="form-row">
                 <div class="form-group">
@@ -82,13 +188,26 @@ const TYPE_CONFIG = {
                     <label>Cans</label>
                     <input type="number" step="1" min="1" id="edit-cans" value="${entry.cans}" required inputmode="numeric">
                 </div>
+            </div>
+            <div class="form-group">
+                <label>Price per Can</label>
+                <select id="edit-pani-price" class="form-select">
+                    <option value="30" ${(entry.pricePerCan||40) == 30 ? 'selected' : ''}>Rs 30 per can</option>
+                    <option value="40" ${(entry.pricePerCan||40) == 40 ? 'selected' : ''}>Rs 40 per can</option>
+                    <option value="70" ${(entry.pricePerCan||40) == 70 ? 'selected' : ''}>Rs 70 per can</option>
+                </select>
             </div>`,
-        readEdit: () => ({
-            date: val('edit-date'),
-            cans: parseInt(val('edit-cans'), 10)
-        }),
-        totalAmount: entries => null,
-        totalLabel: entries => `${entries.reduce((s, e) => s + e.cans, 0)} cans — ${entries.length} entries`,
+        readEdit: () => {
+            const cans        = parseInt(val('edit-cans'), 10);
+            const pricePerCan = parseInt(document.getElementById('edit-pani-price').value, 10);
+            return { date: val('edit-date'), cans, pricePerCan, totalCost: cans * pricePerCan };
+        },
+        totalAmount: entries => entries.reduce((s, e) => s + (e.totalCost || 0), 0),
+        totalLabel:  entries => {
+            const cans = entries.reduce((s, e) => s + e.cans, 0);
+            const cost = entries.reduce((s, e) => s + (e.totalCost || 0), 0);
+            return `${cans} cans — Rs ${fmtNum(cost)} total`;
+        },
     },
 
     faheem: {
@@ -148,61 +267,11 @@ const TYPE_CONFIG = {
             note: val('edit-note').trim()
         }),
         totalAmount: entries => entries.reduce((s, e) => s + e.amount, 0),
-        totalLabel: entries => `Rs ${fmtNum(entries.reduce((s, e) => s + e.amount, 0))} — ${entries.length} entries`,
+        totalLabel:  entries => `Rs ${fmtNum(entries.reduce((s, e) => s + e.amount, 0))} — ${entries.length} entries`,
     },
 
-    darzan: {
-        emoji: '✂️', label: 'Darzan',
-        accent: 'accent-darzan',
-        color: 'var(--c-darzan)', soft: 'var(--c-darzan-soft)',
-        valueFields: ['darzan-qty', 'darzan-item', 'darzan-rate'],
-        resetFields: ['darzan-qty', 'darzan-item', 'darzan-rate'],
-        hasAmount: true,
-        getDetail: e => `${esc(e.item)} — ${e.qty} Darzan × Rs ${fmtNum(e.rate)} = Rs ${fmtNum(e.total)}`,
-        getMonthSummary: entries => `Rs ${fmtNum(entries.reduce((s, e) => s + e.total, 0))}`,
-        getHomeMetaLine: entries => {
-            const thisMonth = getThisMonthKey();
-            const m = entries.filter(e => e.date.slice(0, 7) === thisMonth);
-            return m.length ? `Rs ${fmtNum(m.reduce((s, e) => s + e.total, 0))} this month` : `${entries.length} entries`;
-        },
-        buildEntry: vals => {
-            const qty  = parseFloat(vals['darzan-qty']);
-            const rate = parseFloat(vals['darzan-rate']);
-            return {
-                date:  vals['darzan-date'],
-                item:  vals['darzan-item'].trim(),
-                qty,
-                rate,
-                total: round2(qty * rate)
-            };
-        },
-        editFields: entry => `
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Date</label>
-                    <input type="date" id="edit-date" value="${entry.date}" required>
-                </div>
-                <div class="form-group">
-                    <label>Darzans</label>
-                    <input type="number" step="0.5" min="0.5" id="edit-qty" value="${entry.qty}" required inputmode="decimal">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Item Name</label>
-                <input type="text" id="edit-item" value="${esc(entry.item)}" required autocomplete="off">
-            </div>
-            <div class="form-group">
-                <label>Rate per Darzan (Rs)</label>
-                <input type="number" step="1" min="1" id="edit-rate" value="${entry.rate}" required inputmode="numeric">
-            </div>`,
-        readEdit: () => {
-            const qty  = parseFloat(val('edit-qty'));
-            const rate = parseFloat(val('edit-rate'));
-            return { date: val('edit-date'), item: val('edit-item').trim(), qty, rate, total: round2(qty * rate) };
-        },
-        totalAmount: entries => entries.reduce((s, e) => s + e.total, 0),
-        totalLabel: entries => `Rs ${fmtNum(entries.reduce((s, e) => s + e.total, 0))} — ${entries.length} entries`,
-    },
+    nasra:   makeDarzanConfig('nasra'),
+    sumaira: makeDarzanConfig('sumaira'),
 
     other: {
         emoji: '📝', label: 'Doosra Kharcha',
@@ -248,9 +317,9 @@ const TYPE_CONFIG = {
             name: val('edit-name').trim(),
             amount: parseFloat(val('edit-amount')),
             note: val('edit-note').trim()
-        })  ,
+        }),
         totalAmount: entries => entries.reduce((s, e) => s + e.amount, 0),
-        totalLabel: entries => `Rs ${fmtNum(entries.reduce((s, e) => s + e.amount, 0))} — ${entries.length} entries`,
+        totalLabel:  entries => `Rs ${fmtNum(entries.reduce((s, e) => s + e.amount, 0))} — ${entries.length} entries`,
     }
 };
 
@@ -263,7 +332,7 @@ const state = {
     editingType: null,
     pendingDeleteId: null,
     pendingDeleteType: null,
-    totalMonth: null,   // 'YYYY-MM' for Total Hisaab view
+    totalMonth: null,
     data: Object.fromEntries(ALL_TYPES.map(t => [t, loadData(`bmh_${t}`)]))
 };
 
@@ -345,10 +414,20 @@ const app = {
             if (form) form.addEventListener('submit', e => { e.preventDefault(); this.handleAdd(type); });
         });
 
-        // Darzan live total calculator
-        const calcFields = ['darzan-qty', 'darzan-rate'];
-        calcFields.forEach(id => {
-            document.getElementById(id)?.addEventListener('input', () => this.updateDarzanTotal());
+        // Live calculators
+        ['doodh-litres', 'doodh-price'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', () => this.updateSimpleCalc('doodh'));
+        });
+        ['pani-cans'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', () => this.updateSimpleCalc('pani'));
+        });
+        document.getElementById('pani-price')?.addEventListener('change', () => this.updateSimpleCalc('pani'));
+
+        ['nasra-qty', 'nasra-rate', 'nasra-stitch', 'nasra-suits'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', () => this.updateDarzanCalc('nasra'));
+        });
+        ['sumaira-qty', 'sumaira-rate', 'sumaira-stitch', 'sumaira-suits'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', () => this.updateDarzanCalc('sumaira'));
         });
 
         // Edit form
@@ -357,13 +436,13 @@ const app = {
         // Delete confirm
         document.getElementById('confirm-delete-btn').addEventListener('click', () => this.confirmDelete());
 
-        // Total page: default to current month
+        // Total page default month
         state.totalMonth = getThisMonthKey();
 
         this.renderAllLists();
         this.updateHomeCards();
 
-        // ── Supabase: pull from cloud in background after UI is ready
+        // Supabase background sync
         if (typeof db !== 'undefined' && db.isEnabled()) {
             this._syncFromCloud();
         }
@@ -426,22 +505,44 @@ const app = {
         });
     },
 
-    // ──────────────────── DARZAN LIVE CALC ────────
+    // ──────────────────── LIVE CALCULATORS ────────
 
-    updateDarzanTotal() {
-        const qty  = parseFloat(document.getElementById('darzan-qty')?.value)  || 0;
-        const rate = parseFloat(document.getElementById('darzan-rate')?.value) || 0;
-        const disp = document.getElementById('darzan-total-display');
-        if (disp) disp.textContent = qty && rate ? `Rs ${fmtNum(round2(qty * rate))}` : 'Rs —';
+    updateSimpleCalc(type) {
+        if (type === 'doodh') {
+            const litres = parseFloat(document.getElementById('doodh-litres')?.value) || 0;
+            const price  = parseFloat(document.getElementById('doodh-price')?.value)  || 0;
+            const disp   = document.getElementById('doodh-total-display');
+            if (disp) disp.textContent = (litres && price) ? `Total: Rs ${fmtNum(round2(litres * price))}` : 'Total: Rs —';
+        } else if (type === 'pani') {
+            const cans  = parseInt(document.getElementById('pani-cans')?.value)  || 0;
+            const price = parseInt(document.getElementById('pani-price')?.value) || 0;
+            const disp  = document.getElementById('pani-total-display');
+            if (disp) disp.textContent = (cans && price) ? `Total: Rs ${fmtNum(cans * price)}` : 'Total: Rs —';
+        }
+    },
+
+    updateDarzanCalc(type) {
+        const qty        = parseFloat(document.getElementById(`${type}-qty`)?.value)   || 0;
+        const rate       = parseFloat(document.getElementById(`${type}-rate`)?.value)  || 0;
+        const stitch     = parseFloat(document.getElementById(`${type}-stitch`)?.value)|| 0;
+        const suits      = parseInt(document.getElementById(`${type}-suits`)?.value)   || 0;
+        const darzanTotal = round2(qty * rate);
+        const stitchTotal = stitch * suits;
+        const grand       = darzanTotal + stitchTotal;
+
+        const dDisp = document.getElementById(`${type}-darzan-display`);
+        const tDisp = document.getElementById(`${type}-total-display`);
+        if (dDisp) dDisp.textContent = (qty && rate) ? `Rs ${fmtNum(darzanTotal)}` : 'Rs —';
+        if (tDisp) tDisp.textContent = grand > 0 ? `Grand Total: Rs ${fmtNum(grand)}` : 'Grand Total: Rs —';
     },
 
     // ──────────────────── ADD ENTRIES ─────────────
 
     handleAdd(type) {
-        const cfg = TYPE_CONFIG[type];
+        const cfg  = TYPE_CONFIG[type];
         const vals = {};
 
-        // Date field
+        // Date
         const dateEl = document.getElementById(`${type}-date`);
         if (!dateEl.value) { dateEl.classList.add('input-error'); dateEl.focus(); return; }
         dateEl.classList.remove('input-error');
@@ -458,9 +559,9 @@ const app = {
             vals[id] = el.value;
         }
 
-        // Optional fields
-        const optionalIds = cfg.resetFields.filter(id => !cfg.valueFields.includes(id));
-        optionalIds.forEach(id => { vals[id] = document.getElementById(id)?.value ?? ''; });
+        // Optional fields (in resetFields but not valueFields)
+        cfg.resetFields.filter(id => !cfg.valueFields.includes(id))
+            .forEach(id => { vals[id] = document.getElementById(id)?.value ?? ''; });
 
         const entry = { id: generateId(), ...cfg.buildEntry(vals) };
         state.data[type].push(entry);
@@ -468,16 +569,19 @@ const app = {
         this.renderList(type);
         this.updateHomeCards();
 
-        // Reset value fields, keep date
+        // Reset fields
         cfg.resetFields.forEach(id => {
             const el = document.getElementById(id);
             if (el) el.value = '';
         });
 
-        // Reset darzan calc display
-        if (type === 'darzan') this.updateDarzanTotal();
+        // Reset calc displays
+        if (type === 'doodh') this.updateSimpleCalc('doodh');
+        if (type === 'pani')  this.updateSimpleCalc('pani');
+        if (type === 'nasra')   this.updateDarzanCalc('nasra');
+        if (type === 'sumaira') this.updateDarzanCalc('sumaira');
 
-        // Sync to cloud (fire-and-forget)
+        // Cloud sync
         if (typeof db !== 'undefined') db.insert(type, entry);
 
         showToast('✅ Entry saved!');
@@ -485,14 +589,12 @@ const app = {
 
     // ──────────────────── RENDER LISTS ────────────
 
-    renderAllLists() {
-        ALL_TYPES.forEach(t => this.renderList(t));
-    },
+    renderAllLists() { ALL_TYPES.forEach(t => this.renderList(t)); },
 
     renderList(type) {
         const container = document.getElementById(`entries-${type}`);
         if (!container) return;
-        const cfg = TYPE_CONFIG[type];
+        const cfg     = TYPE_CONFIG[type];
         const entries = [...state.data[type]].sort((a, b) => b.date.localeCompare(a.date));
 
         if (entries.length === 0) {
@@ -500,7 +602,6 @@ const app = {
             return;
         }
 
-        // Group by month
         const grouped = new Map();
         for (const e of entries) {
             const mk = e.date.slice(0, 7);
@@ -508,7 +609,7 @@ const app = {
             grouped.get(mk).push(e);
         }
 
-        const html = [...grouped.entries()].map(([mk, monthEntries]) => `
+        container.innerHTML = [...grouped.entries()].map(([mk, monthEntries]) => `
             <div class="month-group">
                 <div class="month-header">
                     <h3 class="month-title">${formatMonthLabel(mk)}</h3>
@@ -518,15 +619,11 @@ const app = {
                     ${monthEntries.map(e => this._entryHTML(type, e, cfg)).join('')}
                 </div>
             </div>`).join('');
-
-        container.innerHTML = html;
     },
 
     _entryHTML(type, entry, cfg) {
-        const detail = cfg.getDetail(entry);
-        const noteHtml = entry.note
-            ? `<div class="entry-note">${esc(entry.note)}</div>` : '';
-        // Badge for faheem type
+        const detail   = cfg.getDetail(entry);
+        const noteHtml = entry.note ? `<div class="entry-note">${esc(entry.note)}</div>` : '';
         const badgeHtml = (type === 'faheem' && entry.type)
             ? `<span class="entry-badge badge-${entry.type}">${entry.type === 'diya' ? '💸 Diya' : '💰 Liya'}</span>` : '';
 
@@ -536,8 +633,7 @@ const app = {
                 <div class="entry-info">
                     <div class="entry-date">${formatDateDisplay(entry.date)}</div>
                     <div class="entry-detail">${detail}</div>
-                    ${badgeHtml}
-                    ${noteHtml}
+                    ${badgeHtml}${noteHtml}
                 </div>
                 <div class="entry-actions">
                     <button class="icon-btn edit-btn" onclick="app.openEditModal('${type}','${entry.id}')" aria-label="Edit">
@@ -554,13 +650,13 @@ const app = {
 
     openDeleteModal(type, id) {
         state.pendingDeleteType = type;
-        state.pendingDeleteId  = id;
+        state.pendingDeleteId   = id;
         document.getElementById('delete-modal').classList.remove('hidden');
     },
     closeDeleteModal() {
         document.getElementById('delete-modal').classList.add('hidden');
         state.pendingDeleteType = null;
-        state.pendingDeleteId  = null;
+        state.pendingDeleteId   = null;
     },
     confirmDelete() {
         const { pendingDeleteType: type, pendingDeleteId: id } = state;
@@ -571,7 +667,6 @@ const app = {
         this.updateHomeCards();
         if (state.currentView === 'total') this.renderTotal();
         this.closeDeleteModal();
-        // Sync to cloud (fire-and-forget)
         if (typeof db !== 'undefined') db.delete(type, id);
         showToast('🗑️ Entry deleted');
     },
@@ -602,7 +697,6 @@ const app = {
         this.updateHomeCards();
         if (state.currentView === 'total') this.renderTotal();
         this.closeEditModal();
-        // Sync to cloud (fire-and-forget)
         if (typeof db !== 'undefined') db.update(type, state.data[type][idx]);
         showToast('✅ Entry updated!');
     },
@@ -620,52 +714,41 @@ const app = {
         const mk = state.totalMonth;
         document.getElementById('total-month-display').textContent = formatMonthLabel(mk);
 
-        // Gather data for this month across all types
         const monthData = {};
         ALL_TYPES.forEach(type => {
             monthData[type] = state.data[type].filter(e => e.date.slice(0, 7) === mk);
         });
 
-        // Grand total (only amount-based types)
         const grandTotal = ALL_TYPES
             .filter(t => TYPE_CONFIG[t].hasAmount)
             .reduce((sum, type) => {
-                const entries = monthData[type];
-                const amtFn = TYPE_CONFIG[type].totalAmount;
-                return sum + (amtFn ? amtFn(entries) : 0);
+                const fn = TYPE_CONFIG[type].totalAmount;
+                return sum + (fn ? fn(monthData[type]) : 0);
             }, 0);
 
         const totalEntries = ALL_TYPES.reduce((s, t) => s + monthData[t].length, 0);
 
-        // Grand Total Card
         document.getElementById('total-grand-card').innerHTML = `
             <div class="gt-label">Total Kharcha — ${formatMonthLabel(mk)}</div>
-            <div class="gt-amount">Rs ${fmtNum(grandTotal)}</div>
+            <div class="gt-amount">Rs ${fmtNum(round2(grandTotal))}</div>
             <div class="gt-sub">${totalEntries} total entries across all categories</div>`;
 
         if (totalEntries === 0) {
             document.getElementById('total-breakdown').innerHTML = `
-                <div class="total-no-data">
-                    <div class="e-icon">📭</div>
-                    <p>No entries found for this month</p>
-                </div>`;
+                <div class="total-no-data"><div class="e-icon">📭</div><p>No entries found for this month</p></div>`;
             return;
         }
 
-        // Max amount for bar width scaling
         const maxAmount = Math.max(...ALL_TYPES
             .filter(t => TYPE_CONFIG[t].hasAmount)
-            .map(t => {
-                const fn = TYPE_CONFIG[t].totalAmount;
-                return fn ? fn(monthData[t]) : 0;
-            }), 1);
+            .map(t => { const fn = TYPE_CONFIG[t].totalAmount; return fn ? fn(monthData[t]) : 0; }), 1);
 
-        const breakdownHtml = ALL_TYPES.map(type => {
-            const cfg = TYPE_CONFIG[type];
+        document.getElementById('total-breakdown').innerHTML = ALL_TYPES.map(type => {
+            const cfg     = TYPE_CONFIG[type];
             const entries = monthData[type];
-            const amtFn = cfg.totalAmount;
-            const amount = amtFn ? amtFn(entries) : null;
-            const barPct = (amount && maxAmount) ? Math.round((amount / maxAmount) * 100) : 0;
+            const amtFn   = cfg.totalAmount;
+            const amount  = amtFn ? amtFn(entries) : null;
+            const barPct  = (amount && maxAmount) ? Math.round((amount / maxAmount) * 100) : 0;
 
             return `
                 <div class="breakdown-card">
@@ -679,12 +762,12 @@ const app = {
                         </div>` : ''}
                     </div>
                     <div class="breakdown-amount" style="color:${cfg.color}">
-                        ${entries.length === 0 ? '<span style="color:var(--text-3);font-weight:500;font-size:.9rem">None</span>' : cfg.totalLabel(entries)}
+                        ${entries.length === 0
+                            ? '<span style="color:var(--text-3);font-weight:500;font-size:.9rem">None</span>'
+                            : cfg.totalLabel(entries)}
                     </div>
                 </div>`;
         }).join('');
-
-        document.getElementById('total-breakdown').innerHTML = breakdownHtml;
     }
 };
 

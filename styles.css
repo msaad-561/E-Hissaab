@@ -30,7 +30,8 @@
     --c-doodh:      #2563EB;  --c-doodh-soft:  #DBEAFE;
     --c-pani:       #0891B2;  --c-pani-soft:   #CFFAFE;
     --c-faheem:     #7C3AED;  --c-faheem-soft: #EDE9FE;
-    --c-darzan:     #D97706;  --c-darzan-soft: #FEF3C7;
+    --c-nasra:      #15803D;  --c-nasra-soft:  #DCFCE7;
+    --c-sumaira:    #B91C1C;  --c-sumaira-soft:#FEE2E2;
     --c-other:      #BE185D;  --c-other-soft:  #FCE7F3;
     --c-total:      #059669;  --c-total-soft:  #D1FAE5;
 
@@ -377,6 +378,38 @@ input  { font-family: inherit; }
     min-height: 46px;
     display: flex;
     align-items: center;
+    margin-bottom: 14px;
+}
+.calc-display.sm {
+    font-size: .9rem;
+    min-height: 46px;
+    margin-bottom: 0;
+}
+
+/* Select dropdown */
+.form-select {
+    width: 100%;
+    padding: 12px 36px 12px 13px;
+    font-size: 1rem;
+    font-weight: 500;
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--surface-2);
+    color: var(--text-1);
+    font-family: inherit;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    cursor: pointer;
+    transition: border-color .15s var(--ease), box-shadow .15s var(--ease);
+}
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.12);
 }
 
 /* ═══════════════════════════════════════════════════

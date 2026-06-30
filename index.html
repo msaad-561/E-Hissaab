@@ -69,13 +69,23 @@
                     <svg class="nav-card__arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                 </button>
 
-                <button class="nav-card" data-type="darzan" onclick="app.navigate('darzan')">
-                    <div class="nav-card__icon" style="background:var(--c-darzan-soft);color:var(--c-darzan)">✂️</div>
+                <button class="nav-card" data-type="nasra" onclick="app.navigate('nasra')">
+                    <div class="nav-card__icon" style="background:var(--c-nasra-soft);color:var(--c-nasra)">🧵</div>
                     <div class="nav-card__body">
-                        <h2>Darzan</h2>
+                        <h2>Baji Nasra</h2>
                         <p>ka Hisaab</p>
                     </div>
-                    <div class="nav-card__meta" id="meta-darzan"></div>
+                    <div class="nav-card__meta" id="meta-nasra"></div>
+                    <svg class="nav-card__arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+
+                <button class="nav-card" data-type="sumaira" onclick="app.navigate('sumaira')">
+                    <div class="nav-card__icon" style="background:var(--c-sumaira-soft);color:var(--c-sumaira)">✂️</div>
+                    <div class="nav-card__body">
+                        <h2>Sumaira Darzan</h2>
+                        <p>ka Hisaab</p>
+                    </div>
+                    <div class="nav-card__meta" id="meta-sumaira"></div>
                     <svg class="nav-card__arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                 </button>
 
@@ -120,6 +130,11 @@
                         <input type="number" step="0.5" min="0.5" id="doodh-litres" placeholder="1.5" required inputmode="decimal">
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="doodh-price">Price per Litre (Rs)</label>
+                    <input type="number" step="1" min="1" id="doodh-price" placeholder="120" required inputmode="numeric">
+                </div>
+                <div class="calc-display" id="doodh-total-display">Total: Rs —</div>
                 <button type="submit" class="save-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                     Save Entry
@@ -144,6 +159,15 @@
                         <input type="number" step="1" min="1" id="pani-cans" placeholder="2" required inputmode="numeric">
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="pani-price">Price per Can</label>
+                    <select id="pani-price" class="form-select">
+                        <option value="30">Rs 30 per can</option>
+                        <option value="40" selected>Rs 40 per can</option>
+                        <option value="70">Rs 70 per can</option>
+                    </select>
+                </div>
+                <div class="calc-display" id="pani-total-display">Total: Rs —</div>
                 <button type="submit" class="save-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                     Save Entry
@@ -193,42 +217,102 @@
             <div class="entries-container" id="entries-faheem"></div>
         </section>
 
-        <!-- DARZAN VIEW -->
-        <section id="view-darzan" class="view hidden">
-            <form id="form-darzan" class="entry-form" data-type="darzan" novalidate>
+        <!-- BAJI NASRA VIEW -->
+        <section id="view-nasra" class="view hidden">
+            <form id="form-nasra" class="entry-form" data-type="nasra" novalidate>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="darzan-date">
+                        <label for="nasra-date">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                             Date
                         </label>
-                        <input type="date" id="darzan-date" required>
+                        <input type="date" id="nasra-date" required>
                     </div>
                     <div class="form-group">
-                        <label for="darzan-qty">Darzans</label>
-                        <input type="number" step="0.5" min="0.5" id="darzan-qty" placeholder="2" required inputmode="decimal">
+                        <label for="nasra-qty">Darzans</label>
+                        <input type="number" step="0.5" min="0.5" id="nasra-qty" placeholder="2" required inputmode="decimal">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="darzan-item">Item Name</label>
-                    <input type="text" id="darzan-item" placeholder="e.g. Anday, Kela" required autocomplete="off">
+                    <label for="nasra-item">Item Name</label>
+                    <input type="text" id="nasra-item" placeholder="e.g. Anday, Kela" required autocomplete="off">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="darzan-rate">Rate/Darzan (Rs)</label>
-                        <input type="number" step="1" min="1" id="darzan-rate" placeholder="120" required inputmode="numeric">
+                        <label for="nasra-rate">Rate/Darzan (Rs)</label>
+                        <input type="number" step="1" min="1" id="nasra-rate" placeholder="120" required inputmode="numeric">
                     </div>
                     <div class="form-group">
-                        <label>Total</label>
-                        <div class="calc-display" id="darzan-total-display">Rs —</div>
+                        <label>Darzan Total</label>
+                        <div class="calc-display sm" id="nasra-darzan-display">Rs —</div>
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nasra-stitch">Stitching/Suit (Rs)</label>
+                        <input type="number" step="1" min="0" id="nasra-stitch" placeholder="500" required inputmode="numeric">
+                    </div>
+                    <div class="form-group">
+                        <label for="nasra-suits">No. of Suits</label>
+                        <input type="number" step="1" min="0" id="nasra-suits" placeholder="3" required inputmode="numeric">
+                    </div>
+                </div>
+                <div class="calc-display" id="nasra-total-display">Grand Total: Rs —</div>
                 <button type="submit" class="save-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                     Save Entry
                 </button>
             </form>
-            <div class="entries-container" id="entries-darzan"></div>
+            <div class="entries-container" id="entries-nasra"></div>
+        </section>
+
+        <!-- SUMAIRA DARZAN VIEW -->
+        <section id="view-sumaira" class="view hidden">
+            <form id="form-sumaira" class="entry-form" data-type="sumaira" novalidate>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sumaira-date">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Date
+                        </label>
+                        <input type="date" id="sumaira-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sumaira-qty">Darzans</label>
+                        <input type="number" step="0.5" min="0.5" id="sumaira-qty" placeholder="2" required inputmode="decimal">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="sumaira-item">Item Name</label>
+                    <input type="text" id="sumaira-item" placeholder="e.g. Anday, Kela" required autocomplete="off">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sumaira-rate">Rate/Darzan (Rs)</label>
+                        <input type="number" step="1" min="1" id="sumaira-rate" placeholder="120" required inputmode="numeric">
+                    </div>
+                    <div class="form-group">
+                        <label>Darzan Total</label>
+                        <div class="calc-display sm" id="sumaira-darzan-display">Rs —</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sumaira-stitch">Stitching/Suit (Rs)</label>
+                        <input type="number" step="1" min="0" id="sumaira-stitch" placeholder="500" required inputmode="numeric">
+                    </div>
+                    <div class="form-group">
+                        <label for="sumaira-suits">No. of Suits</label>
+                        <input type="number" step="1" min="0" id="sumaira-suits" placeholder="3" required inputmode="numeric">
+                    </div>
+                </div>
+                <div class="calc-display" id="sumaira-total-display">Grand Total: Rs —</div>
+                <button type="submit" class="save-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Save Entry
+                </button>
+            </form>
+            <div class="entries-container" id="entries-sumaira"></div>
         </section>
 
         <!-- OTHER VIEW -->
@@ -314,7 +398,7 @@
 
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Supabase client wrapper (configure your keys inside) -->
+    <!-- Supabase client wrapper -->
     <script src="supabase-client.js"></script>
     <!-- Main app -->
     <script src="app.js"></script>
